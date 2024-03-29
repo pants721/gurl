@@ -36,18 +36,26 @@ var rootCmd = &cobra.Command{
             
             fmt.Print(body) 
 		case "POST":
-            body, err := methods.Post(rUrl, headers, data)        
+            body, err := methods.Post(rUrl, headers, data)
             if err != nil {
                 fmt.Print(err)
             }
 
            fmt.Print(body) 
 		case "DELETE":
-			fmt.Println("TODO")	
+            body, err := methods.Delete(rUrl, headers, data)
+            if err != nil {
+                fmt.Print(err)
+            }
+
+           fmt.Print(body) 
 		case "PUT":
-			fmt.Println("TODO")
-		case "HEAD":
-			fmt.Println("TODO")
+            body, err := methods.Put(rUrl, headers, data)
+            if err != nil {
+                fmt.Print(err)
+            }
+
+           fmt.Print(body) 
 		default:
 			fmt.Println("Invalid method")
 		}
@@ -72,5 +80,3 @@ func init() {
     rootCmd.Flags().StringArrayVarP(&headers, "headers", "H", []string{}, "request headers")
     rootCmd.Flags().StringVarP(&data, "data", "d", "", "request data")
 }
-
-
