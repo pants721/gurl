@@ -1,37 +1,31 @@
 package methods
 
 import (
-	"bytes"
-	"io"
-	"net/http"
-	"strings"
+    "bytes"
+    "io"
+    "net/http"
+    "strings"
 )
 
-func Get(url string) (respBody string, err error) {
-	resp, err := http.Get(url)
-    if err != nil {
-        return
-    }
+const (
+    MethodGet  = "GET"
+    MethodPost = "POST"
+    MethodDelete = "DELETE"
+    MethodPut = "PUT"
+)
 
-    b, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return
-    }
-
-    respBody = string(b)
-    return
-}
-
-func Post(url string, headers []string, body string) (respBody string, err error) {
+func Request(method, url string, headers []string, body string) (respBody string, err error) {
     reqBody := bytes.NewBuffer([]byte(body))
 
-    
-    client := &http.Client{}
-    req, err := http.NewRequest("POST", url, reqBody)
+    client := http.DefaultClient
+    req, err := http.NewRequest(method, url, reqBody)
     if err != nil {
-        return
+        return "", err
     }
 
+    req.Header.Add("User-Agent", "gurl")
+    req.Header.Add("Accept", "*/*")
+    
     for _, header := range headers {
         parts := strings.Split(header, ":")
         if len(parts) >= 2 {
@@ -44,15 +38,32 @@ func Post(url string, headers []string, body string) (respBody string, err error
 
     resp, err := client.Do(req)
     if err != nil {
-        return
+        return "", err
     }
-    defer resp.Body.Close() 
-    
+    defer resp.Body.Close()
+
     b, err := io.ReadAll(resp.Body)
     if err != nil {
-        return
+        return "", err
     }
 
     respBody = string(b)
-    return
+    return respBody, nil
 }
+
+func Get(url string, headers []string, body string) (respBody string, err error) {
+    return Request(MethodGet, url, headers, body)
+}
+
+func Post(url string, headers []string, body string) (respBody string, err error) {
+    return Request(MethodPost, url, headers, body)
+}
+
+func Delete(url string, headers []string, body string) (respBody string, err error) {
+    return Request(MethodDelete, url, headers, body)
+}
+
+func Put(url string, headers []string, body string) (respBody string, err error) {
+    return Request(MethodPut, url, headers, body)
+}
+
