@@ -29,7 +29,7 @@ var rootCmd = &cobra.Command{
         
 		switch method {
 		case "GET":
-            body, err := methods.Get(rUrl)
+            body, err := methods.Get(rUrl, headers, data)
             if err != nil {
                 fmt.Print(err)
             }
