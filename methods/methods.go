@@ -2,7 +2,6 @@ package methods
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -33,17 +32,14 @@ func Post(url string, headers []string, body string) (respBody string, err error
         return
     }
 
-    for idx, header := range headers {
+    for _, header := range headers {
         parts := strings.Split(header, ":")
-        if len(parts) < 2 {
-            err = fmt.Errorf("Invalid header at index %d", idx)
-            return
+        if len(parts) >= 2 {
+            k := strings.TrimSpace(parts[0])
+            v := strings.TrimSpace(parts[1])
+
+            req.Header.Add(k, v)
         }
-
-        k := strings.TrimSpace(parts[0])
-        v := strings.TrimSpace(parts[1])
-
-        req.Header.Add(k, v)
     }
 
     resp, err := client.Do(req)
