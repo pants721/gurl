@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 
 	"gurl/methods"
@@ -15,16 +16,27 @@ var rootCmd = &cobra.Command{
 	Short: "A http request client, written in Go!",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+        rUrl := args[0]
+        
+        pUrl, err := url.Parse(rUrl)
+        if err != nil {
+            fmt.Print(err)
+        }
+        
+        if !pUrl.IsAbs() {
+            rUrl = "https://" + pUrl.String()
+        }
+        
 		switch method {
 		case "GET":
-            body, err := methods.Get(args[0])
+            body, err := methods.Get(rUrl)
             if err != nil {
                 fmt.Print(err)
             }
             
             fmt.Print(body) 
 		case "POST":
-            body, err := methods.Post(args[0], headers, data)        
+            body, err := methods.Post(rUrl, headers, data)        
             if err != nil {
                 fmt.Print(err)
             }
